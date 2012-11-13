@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.conf import settings
 from django.shortcuts import redirect
+from django.utils.timezone import now
 
 
 SESSION_KEY = "__strict_timeout_value"
@@ -45,7 +46,7 @@ def strict_timeout(function=None, login_url=settings.LOGIN_URL,
                 return redirect("%s?next=%s" % (login_url,
                     request.get_full_path()))
 
-            request_time = datetime.now()
+            request_time = now()
             last_activity = max(request.session.get(session_key, request_time),
                 request.user.last_login)
 
