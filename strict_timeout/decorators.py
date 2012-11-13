@@ -47,8 +47,16 @@ def strict_timeout(function=None, login_url=settings.LOGIN_URL,
                     request.get_full_path()))
 
             request_time = now()
-            last_activity = max(request.session.get(session_key, request_time),
-                request.user.last_login)
+
+            try:
+                last_activity = max(
+                    request.session.get(session_key, request_time),
+                    request.user.last_login,
+                )
+            except TypeError:
+                # Work if we're trying to compare timezone and naive 
+                # datetime values
+                last_activity = request.user.last_login
 
             if last_activity < request_time - timedelta(seconds=timeout):
                 return redirect("%s?next=%s" % (login_url,
